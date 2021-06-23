@@ -26,12 +26,21 @@ def get_user_content(user, folders):
 if __name__ == '__main__':
     gis = GIS(profile='adoezema_Portal')
 
-    for user in gis.users.search():
-        if user.fullName not in ['Austin Doezema', 'David Andrus', 'Francesca Ortisi', 'Jamie Lau', 'Jeff Evans',
-                                'Jake Murawski', 'James Hainstock', 'Paul McCord', 'Michael Cousins']:
-            print(f'{user.fullName}: {user.username}')
-            folders = get_folder_names(user)
-            hosted_services = get_user_content(user, folders)
-            if hosted_services:
-                print(json.dumps(hosted_services, indent=4))
+    with open(f'.\data\c{datetime.strftime(datetime.now(),"%Y%m%d")}_Portal_Hosted_Services.json', 'w') as outfile:
+        portal_findings = []
+        for user in gis.users.search():
+            if user.fullName not in ['Austin Doezema', 'David Andrus', 'Francesca Ortisi', 'Jamie Lau', 'Jeff Evans',
+                                    'Jake Murawski', 'James Hainstock', 'Paul McCord', 'Michael Cousins']:
+                user_content = {
+                    'Name': user.fullName,
+                    'Username': user.username,
+                    'Hosted_Services': [],
+                }
+
+                folders = get_folder_names(user)
+                hosted_services = get_user_content(user, folders)
+                if hosted_services:
+                    user_content['Hosted_Services'].append(hosted_services)
+                portal_findings.append(user_content)
+        json.dump(portal_findings, outfile)
 
