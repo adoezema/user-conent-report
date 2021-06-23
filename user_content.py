@@ -18,7 +18,7 @@ def get_user_content(user, folders):
         for item in content:
             if (item.type == 'Feature Service') and ('Hosted' in item.url):
                 info = {'Title': item.title, 'ID': item.id, 'Created': convert_date(item.created), 
-                'Modified': convert_date(item.modified), 'Item Page': item.homepage}
+                'Modified': convert_date(item.modified), 'Folder': folder, 'Item Page': item.homepage}
                 result.append(info)
     return result
 
