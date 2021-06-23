@@ -1,5 +1,6 @@
 import json
 from arcgis import GIS
+from datetime import datetime
 
 def get_folder_names(user):
     folder_names = [folder["title"] for folder in user.folders]
@@ -7,13 +8,17 @@ def get_folder_names(user):
     return folder_names
 
 def get_user_content(user, folders):
+
+    def convert_date(ts):
+        return datetime.strftime(datetime.utcfromtimestamp(ts/1000), '%m/%d/%Y')
+
     result = []
     data = {folder: user.items(folder=folder, max_items=200) for folder in folders} 
     for folder, content in data.items():
         for item in content:
             if (item.type == 'Feature Service') and ('Hosted' in item.url):
-                info = {'Title': item.title, 'ID': item.id, 
-                        'Item Page': f'https://gisportal.ohm-advisors.com/portal/home/item.html?id={item.id}'}
+                info = {'Title': item.title, 'ID': item.id, 'Created': convert_date(item.created), 
+                'Modified': convert_date(item.modified), 'Item Page': item.homepage}
                 result.append(info)
     return result
 
